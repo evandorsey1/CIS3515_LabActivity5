@@ -9,6 +9,7 @@ import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
+import java.lang.Integer.min
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     p0?.run {
                         nameTextView.text = getItemAtPosition(p2).toString()
+                        //nameTextView.text = names[getItemAtPosition(p2)]
                     }
                 }
 
@@ -36,10 +38,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
+
         findViewById<View>(R.id.deleteButton).setOnClickListener {
-            (names as MutableList).removeAt(spinner.selectedItemPosition)
-            (spinner.adapter as BaseAdapter).notifyDataSetChanged()
+
+            val selectedPosition = spinner.selectedItemPosition
+
+            if (selectedPosition != AdapterView.INVALID_POSITION) {
+                (names as MutableList).removeAt(selectedPosition)
+                (spinner.adapter as BaseAdapter).notifyDataSetChanged()
+
+                if ((names as MutableList).isNotEmpty()) {
+                    val newSelectedPosition = min(selectedPosition, names.size - 1)
+                    spinner.setSelection(newSelectedPosition)
+                    nameTextView.text = names[newSelectedPosition]
+                } else {
+                    nameTextView.text = "No more names left"
+                }
+            }
         }
+
 
     }
 }
